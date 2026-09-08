@@ -1,26 +1,26 @@
 # GuidedRepository-OpenMP
 
-This guided repository introduces OpenMP one version at a time. Version 3 uses
-every OpenMP worker for every matrix multiplication.
+This guided repository introduces OpenMP one version at a time. Version 4
+keeps one OpenMP team for the complete calculation.
 
 The program creates 200 random `Matrix<double>` objects with MatrixClassDemo
-and multiplies them in order. Workers calculate separate result rows through
-MatrixClassDemo `get()` and `set()`. MatrixClassDemo is not changed.
+and multiplies them in order. Each worker carries a result row through all 200
+matrices. MatrixClassDemo is not changed.
 
 ## Principle
 
-Version 3 applies a parallel `for` to the rows of each result matrix. Its
-implicit barrier completes one product before the next product begins.
+Version 4 uses one parallel region and dynamic row scheduling. OpenMP maintains
+the work queue and synchronizes each request for the next available row.
 
 ```text
-product = matrices[0]
-for each remaining matrix
-    create an empty result matrix
-    parallel for each result row
-        for each column
-            calculate the dot product with get()
-            store the value with set()
-    product = result
+create one OpenMP team
+workers dynamically claim result rows
+for each claimed row
+    current row = row from matrices[0]
+    for each remaining matrix
+        calculate the next row with dot products
+        swap the current and next row buffers
+    store the completed row
 ```
 
 ## OpenMP setup
@@ -52,6 +52,7 @@ count cannot exceed the matrix size.
 
 # Change Log
 
+- v4.0.0 uses one OpenMP team with dynamically scheduled rolling rows
 - v3.0.0 divides every result matrix into rows with an OpenMP parallel loop
 - v2.0.0 divides the matrix array into chunks with an OpenMP parallel loop
 - v1.0.0 adds serial multiplication of 200 random matrices

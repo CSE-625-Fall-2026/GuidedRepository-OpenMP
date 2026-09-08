@@ -40,15 +40,6 @@ TEST(MatrixProduct, MultipliesEveryMatrix) {
     EXPECT_NEAR(product.get(1, 1), 50.0 * scale, 1e-10);
 }
 
-TEST(MatrixProduct, DividesRowsEvenly) {
-    EXPECT_EQ(guided_openmp::rowsForThread(10, 0, 3), 4);
-    EXPECT_EQ(guided_openmp::rowsForThread(10, 1, 3), 3);
-    EXPECT_EQ(guided_openmp::rowsForThread(10, 2, 3), 3);
-    EXPECT_EQ(guided_openmp::startingRowForThread(10, 0, 3), 0);
-    EXPECT_EQ(guided_openmp::startingRowForThread(10, 1, 3), 4);
-    EXPECT_EQ(guided_openmp::startingRowForThread(10, 2, 3), 7);
-}
-
 TEST(MatrixProduct, RejectsInvalidThreadCounts) {
     const auto matrices = guided_openmp::createRandomMatrices(1, 625);
     EXPECT_THROW(guided_openmp::multiplyMatrices(matrices, 0), std::invalid_argument);
