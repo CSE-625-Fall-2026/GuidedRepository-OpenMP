@@ -33,6 +33,42 @@ macOS: install `libomp` with `brew install libomp` and configure with
 
 Linux: install `g++ libomp-dev` with `apt`, or `gcc-c++ libgomp` with `dnf`.
 
+The [official OpenMP documentation](https://www.openmp.org/specifications/)
+provides specifications, examples, and quick-reference guides.
+
+## Common OpenMP directives
+
+| Directive | Common use |
+|---|---|
+| `#pragma omp parallel` | Create a team of threads for a block |
+| `#pragma omp parallel for` | Create a team and divide loop iterations |
+| `#pragma omp for` | Divide a loop among an existing team |
+| `#pragma omp sections` | Run different independent blocks concurrently |
+| `#pragma omp single` | Let one thread execute a block |
+| `#pragma omp task` | Create work that any available thread can perform |
+| `#pragma omp barrier` | Wait until every thread reaches the same point |
+| `#pragma omp critical` | Allow one thread at a time into a block |
+| `#pragma omp atomic` | Protect one simple memory update |
+
+## Common clauses and runtime controls
+
+| Command | Common use |
+|---|---|
+| `num_threads(n)` | Request `n` threads for a parallel region |
+| `schedule(static)` | Assign loop work before execution |
+| `schedule(dynamic, n)` | Assign chunks of `n` iterations as threads finish |
+| `private(value)` | Give each thread its own uninitialized value |
+| `firstprivate(value)` | Give each thread an initialized copy |
+| `shared(value)` | Share one value among the team |
+| `collapse(n)` | Combine `n` nested loops for scheduling |
+| `reduction(op: value)` | Combine thread-local values safely |
+| `omp_set_num_threads(n)` | Set the default number of threads |
+| `omp_get_thread_num()` | Get the current thread number |
+| `omp_get_num_threads()` | Get the current team size |
+| `omp_get_wtime()` | Read a wall-clock timer |
+| `OMP_NUM_THREADS` | Set the default thread count through the environment |
+| `OMP_SCHEDULE` | Select runtime loop scheduling through the environment |
+
 ## Build and test
 
 The default build type is Debug, so the examples run without optimization.
