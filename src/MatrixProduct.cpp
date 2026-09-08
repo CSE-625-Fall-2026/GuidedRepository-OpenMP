@@ -72,7 +72,7 @@ Matrix multiplyMatrices(const MatrixArray& matrices, std::size_t thread_count) {
         std::vector<double> current_values(matrix_size);
         std::vector<double> next_values(matrix_size);
 
-#pragma omp for schedule(dynamic, 1)
+#pragma omp for schedule(static, 1)
         for (long long row_number = 0;
              row_number < static_cast<long long>(matrix_size);
              ++row_number) {
