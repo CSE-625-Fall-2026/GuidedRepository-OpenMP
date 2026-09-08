@@ -53,6 +53,20 @@ count cannot exceed the matrix size.
 ./build/example/overloaded_new 520 8
 ```
 
+## Profile results
+
+These results use 200 matrices of size 800 by 800, 10 OpenMP threads, and the
+Debug build without optimization. Times are measured in seconds on one machine
+and will vary by hardware.
+
+| Version | Implementation | Regular new | Overloaded new v7 |
+|---|---|---:|---:|
+| v2.0.0 | Matrix array chunks | 170.433 | 145.820 |
+| v3.0.0 | Row groups for each product | 173.858 | 164.612 |
+| v4.0.0 | Persistent team with dynamic rows | 132.249 | 103.791 |
+| v5.0.0 | Persistent team with static rows | 133.747 | 106.141 |
+| v6.0.0 | Cache-friendly static rows | 92.235 | 94.543 |
+
 # Change Log
 
 - v6.0.0 reorders the inner loops for cache-friendly row access
