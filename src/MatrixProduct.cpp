@@ -2,6 +2,7 @@
 
 #include <omp.h>
 
+#include <algorithm>
 #include <limits>
 #include <random>
 #include <stdexcept>
@@ -83,12 +84,12 @@ Matrix multiplyMatrices(const MatrixArray& matrices, std::size_t thread_count) {
 
             for (std::size_t index = 1; index < matrices.size(); ++index) {
                 const Matrix& matrix = matrices[index];
-                for (std::size_t column = 0; column < matrix_size; ++column) {
-                    double sum = 0.0;
-                    for (std::size_t inner = 0; inner < matrix_size; ++inner) {
-                        sum += current_values[inner] * matrix.get(inner, column);
+                std::fill(next_values.begin(), next_values.end(), 0.0);
+                for (std::size_t inner = 0; inner < matrix_size; ++inner) {
+                    const double current_value = current_values[inner];
+                    for (std::size_t column = 0; column < matrix_size; ++column) {
+                        next_values[column] += current_value * matrix.get(inner, column);
                     }
-                    next_values[column] = sum;
                 }
                 current_values.swap(next_values);
             }

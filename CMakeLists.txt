@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(
     GuidedRepositoryOpenMP
-    VERSION 5.0.0
+    VERSION 6.0.0
     DESCRIPTION "Guided examples for learning OpenMP"
     LANGUAGES CXX
 )
