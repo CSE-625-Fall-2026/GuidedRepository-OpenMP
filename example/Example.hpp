@@ -37,7 +37,7 @@ inline bool readInputs(
 
     return readPositiveNumber(arguments[1], matrix_size) &&
         readPositiveNumber(arguments[2], thread_count) &&
-        thread_count <= guided_openmp::matrix_count;
+        thread_count <= matrix_size;
 }
 
 inline double calculateChecksum(const guided_openmp::Matrix& matrix) {
