@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(
     GuidedRepositoryOpenMP
-    VERSION 1.0.0
+    VERSION 2.0.0
     DESCRIPTION "Guided examples for learning OpenMP"
     LANGUAGES CXX
 )
@@ -32,12 +32,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(MatrixClassDemo CustomMemoryAllocator)
 
+find_package(OpenMP REQUIRED)
+
 add_library(guided_openmp src/MatrixProduct.cpp)
 add_library(GuidedRepositoryOpenMP::guided_openmp ALIAS guided_openmp)
 
 target_compile_features(guided_openmp PUBLIC cxx_std_17)
 target_include_directories(guided_openmp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
-target_link_libraries(guided_openmp PUBLIC MatrixClassDemo::matrix)
+target_link_libraries(guided_openmp PUBLIC MatrixClassDemo::matrix OpenMP::OpenMP_CXX)
 
 add_subdirectory(example)
 

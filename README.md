@@ -1,21 +1,34 @@
 # GuidedRepository-OpenMP
 
-This guided repository introduces OpenMP one version at a time. Version 1 is
-the serial baseline and does not use OpenMP.
+This guided repository introduces OpenMP one version at a time. Version 2
+divides the matrix array into contiguous chunks.
 
 The program creates 200 random `Matrix<double>` objects with MatrixClassDemo
-and multiplies them in order. `regular_new` uses the standard allocator.
-`overloaded_new` uses CustomMemoryAllocator version 7.
+and multiplies them in order. Each OpenMP worker calculates one chunk, then
+the caller multiplies the chunk results in order. Both allocation examples are
+provided.
 
 ## Principle
 
-Version 1 establishes the serial work that later versions parallelize.
+Version 2 uses a parallel `for` to distribute independent matrix chunks.
 
 ```text
-product = matrices[0]
-for each remaining matrix
-    product = product * matrix
+q = floor(200 / P)
+r = 200 mod P
+C_i = q + 1 when i < r, otherwise q
+S_i = iq + min(i, r)
+
+parallel for each chunk i
+    multiply matrices S_i through S_i + C_i - 1
+multiply the chunk results in order
 ```
+
+## OpenMP setup
+
+macOS: install `libomp` with `brew install libomp` and configure with
+`-DOpenMP_ROOT="$(brew --prefix libomp)"`.
+
+Linux: install `g++ libomp-dev` with `apt`, or `gcc-c++ libgomp` with `dnf`.
 
 ## Build and test
 
@@ -29,15 +42,14 @@ ctest --test-dir build --output-on-failure
 
 ## Run
 
-Both examples use 520 by 520 matrices by default.
+Both examples require the matrix size and OpenMP thread count.
 
 ```sh
-./build/example/regular_new
-./build/example/overloaded_new
-./build/example/regular_new 300
-./build/example/overloaded_new 300
+./build/example/regular_new 520 8
+./build/example/overloaded_new 520 8
 ```
 
 # Change Log
 
+- v2.0.0 divides the matrix array into chunks with an OpenMP parallel loop
 - v1.0.0 adds serial multiplication of 200 random matrices

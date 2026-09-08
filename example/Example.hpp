@@ -12,24 +12,32 @@
 
 namespace example {
 
-inline bool readMatrixSize(int argument_count, char** arguments, std::size_t& matrix_size) {
-    matrix_size = guided_openmp::default_matrix_size;
-    if (argument_count == 1) {
-        return true;
-    }
-    if (argument_count != 2) {
-        return false;
-    }
-
+inline bool readPositiveNumber(const char* text, std::size_t& result) {
     errno = 0;
     char* end = nullptr;
-    const unsigned long long value = std::strtoull(arguments[1], &end, 10);
-    if (errno != 0 || end == arguments[1] || *end != '\0' || value == 0 ||
+    const unsigned long long value = std::strtoull(text, &end, 10);
+    if (errno != 0 || end == text || *end != '\0' || value == 0 ||
         value > std::numeric_limits<std::size_t>::max()) {
         return false;
     }
-    matrix_size = static_cast<std::size_t>(value);
+
+    result = static_cast<std::size_t>(value);
     return true;
+}
+
+inline bool readInputs(
+    int argument_count,
+    char** arguments,
+    std::size_t& matrix_size,
+    std::size_t& thread_count
+) {
+    if (argument_count != 3) {
+        return false;
+    }
+
+    return readPositiveNumber(arguments[1], matrix_size) &&
+        readPositiveNumber(arguments[2], thread_count) &&
+        thread_count <= guided_openmp::matrix_count;
 }
 
 inline double calculateChecksum(const guided_openmp::Matrix& matrix) {
@@ -40,19 +48,24 @@ inline double calculateChecksum(const guided_openmp::Matrix& matrix) {
     return checksum;
 }
 
-inline int run(std::size_t matrix_size, const char* allocation_name) {
+inline int run(
+    std::size_t matrix_size,
+    std::size_t thread_count,
+    const char* allocation_name
+) {
     const auto start = std::chrono::steady_clock::now();
     const auto matrices = guided_openmp::createRandomMatrices(matrix_size);
-    const auto product = guided_openmp::multiplyMatrices(matrices);
+    const auto product = guided_openmp::multiplyMatrices(matrices, thread_count);
     const auto finish = std::chrono::steady_clock::now();
     const std::chrono::duration<double> elapsed = finish - start;
 
     std::printf(
-        "%s: %zu matrices of %zux%zu multiplied in %.3f seconds, checksum %.6f\n",
+        "%s: %zu matrices of %zux%zu multiplied with %zu OpenMP threads in %.3f seconds, checksum %.6f\n",
         allocation_name,
         guided_openmp::matrix_count,
         matrix_size,
         matrix_size,
+        thread_count,
         elapsed.count(),
         calculateChecksum(product)
     );
